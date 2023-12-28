@@ -25,6 +25,7 @@
     "@sapphire/decorators": "^6.0.1",
     "@sapphire/framework": "^4.5.1",
     "@sapphire/plugin-logger": "^3.0.3",
+    "axios": "^1.6.3",
     "discord.js": "^14.13.0",
     "fastify": "^4.22.2",
     "fastify-metrics": "^10.3.0",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@sapphire/eslint-config": "^5.0.2",
     "@sapphire/ts-config": "^5.0.0",
+    "@types/axios": "^0.14.0",
     "@types/node": "^20.5.9",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",

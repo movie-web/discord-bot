@@ -10,7 +10,7 @@ export class StatusCommand extends Command {
       const statusResults = await this.checkUrlsStatus(mwUrls);
 
       const embeds = this.createEmbeds(statusResults);
-      // Uncomment the next line if you use components
+      // uncomment the next line if you use components
       // const components = this.createComponents();
 
       await interaction.editReply({ embeds /*, components*/ });
@@ -38,11 +38,11 @@ export class StatusCommand extends Command {
     const exampleEmbed = new EmbedBuilder()
       .setColor(0x0099FF)
       .setTitle('Movie-Web Status')
-      .setURL('https://movie-web.app') // Replace with your website or relevant link
+      .setURL('https://movie-web.app') 
       .setAuthor({ 
         name: 'Movie-Web Bot', 
-        iconURL: 'https://avatars.githubusercontent.com/u/121455091?s=200&v=4', // Replace with your bot's icon URL
-        url: 'https://movie-web.app' // Replace with your website or relevant link
+        iconURL: 'https://avatars.githubusercontent.com/u/121455091?s=200&v=4', 
+        url: 'https://movie-web.app' 
       })
       .setDescription('Current status of Movie-Web URLs')
       .setThumbnail(this.container.client.user?.displayAvatarURL() ?? config.mwIconUrl)
@@ -50,7 +50,7 @@ export class StatusCommand extends Command {
       .setTimestamp()
       .setFooter({ 
         text: 'Status checked at', 
-        iconURL: 'https://avatars.githubusercontent.com/u/121455091?s=200&v=4' // Optional: Footer icon URL
+        iconURL: 'https://avatars.githubusercontent.com/u/121455091?s=200&v=4' // Optional Footer icon URL
       });
 
     return [exampleEmbed];

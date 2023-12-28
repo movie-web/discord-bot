@@ -1,5 +1,6 @@
 import { Command } from '@sapphire/framework';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, EmbedBuilder } from 'discord.js';
+import axios from 'axios'; // Assuming axios is used for HTTP requests
 
 import pkg from '#package.json' assert { type: 'json' };
 import { config } from '#src/config';
@@ -10,14 +11,29 @@ export class InfoCommand extends Command {
     try {
       await interaction.deferReply();
 
-      const embed = {
-        title: 'mw-bot info',
-        description: `mw-bot v${pkg.version}`,
-        thumbnail: {
-          url: this.container.client.user?.displayAvatarURL() ?? config.mwIconUrl,
-        },
-        color: 0xa87fd1,
+      // Function to measure response time
+      const getResponseTime = async () => {
+        const start = Date.now();
+        await axios.get('https://movie-web.app');
+        const end = Date.now();
+        return end - start;
       };
+
+      // Get the response time
+      const responseTime = await getResponseTime();
+
+      // Using EmbedBuilder for better formatting and structuring
+      const embed = new EmbedBuilder()
+        .setTitle('mw-bot Info')
+        .setDescription(`Version: ${pkg.version}`)
+        .setThumbnail(this.container.client.user?.displayAvatarURL() ?? config.mwIconUrl)
+        .setColor(0xa87fd1)
+        .addFields([
+          { name: 'Website Response Time', value: `${responseTime} ms` },
+          // more field maybe
+        ])
+        .setTimestamp()
+        .setFooter({ text: 'mw-bot', iconURL: this.container.client.user?.displayAvatarURL() });
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder().setLabel('Discord').setStyle(ButtonStyle.Link).setURL('https://discord.movie-web.app/'),
