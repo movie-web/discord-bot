@@ -56,10 +56,7 @@ export class StatusCommand extends Command {
     return [exampleEmbed];
   }
 
-  // Uncomment to use components
-  // private createComponents(): object[] {
-  //   // Add your component creation logic here
-  // }
+
 
   public override registerApplicationCommands(registry: Command.Registry): void {
     registry.registerChatInputCommand((builder) =>
