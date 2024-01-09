@@ -217,16 +217,23 @@ async function makeResponseEmbed(
     return void interaction.editReply('An error occurred while collecting providers.');
   }
 
+  let title = `${media.title} (${media.releaseYear})`;
+  if (media.type === 'show' && media.season && media.episode) {
+    title = `${media.title} S${media.season.number.toString().padStart(2, '0')}E${media.episode.number
+      .toString()
+      .padStart(2, '0')} (${media.releaseYear})`;
+  }
+
   const description = sources
     .map((source) => {
       const sourceStatus = status.find((s) => s.id === source);
       if (!sourceStatus) return undefined;
-      return `\`${source}\` ${getStatusEmote(sourceStatus.status, interaction.client)}`;
+      return `${getStatusEmote(sourceStatus.status, interaction.client)} \`${source}\``;
     })
     .join('\n');
 
   const embed = {
-    title: `${media.title} (${media.releaseYear})`,
+    title,
     description,
     color: 0xa87fd1,
     thumbnail: {

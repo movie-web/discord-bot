@@ -10,14 +10,14 @@ import { z } from 'zod';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const schema = z.object({
-  discordToken: z.string().nonempty(),
-  guildId: z.string().nonempty(),
-  tmdbApiKey: z.string().nonempty(),
+  discordToken: z.string().min(1),
+  guildId: z.string().min(17),
+  tmdbApiKey: z.string().min(1),
   tagRefreshUrl: z
     .string()
-    .nonempty()
+    .min(1)
     .default('https://raw.githubusercontent.com/movie-web/discord-bot/master/src/tags.toml'),
-  mwIconUrl: z.string().nonempty().default('https://movie-web.app/android-chrome-512x512.png'),
+  mwIconUrl: z.string().min(1).default('https://movie-web.app/android-chrome-512x512.png'),
 });
 
 const prefix = 'CONF_';
@@ -91,13 +91,13 @@ const embedSchema = z.object({
 const tagSchema = z
   .object({
     isContextEnabled: z.boolean(),
-    content: z.string().nonempty().max(2000),
+    content: z.string().min(1).max(2000),
     embeds: z.array(embedSchema).nonempty().max(10).optional(),
     urls: z
       .array(
         z.object({
-          label: z.string().nonempty().max(80),
-          url: z.string().url().nonempty().max(2000),
+          label: z.string().min(1).max(80),
+          url: z.string().url().min(1).max(2000),
         }),
       )
       .nonempty()
@@ -133,5 +133,5 @@ for (const [key, tag] of Object.entries(tagStore)) {
 
 export const mwUrls = readFileSync(path.join(__dirname, 'mw-urls.txt'), 'utf8').split('\n');
 
-const mwUrlsSchema = z.array(z.string().url().nonempty().max(100)).max(20);
+const mwUrlsSchema = z.array(z.string().url().min(1).max(100)).max(20);
 mwUrlsSchema.parse(mwUrls);

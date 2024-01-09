@@ -57,7 +57,7 @@ export class TagsCommand extends Command {
           if (!selectedTag) return;
 
           replyOptions = {
-            content: selectedTag.content,
+            content: `${selectedTag.content}\nSent by ${interaction.user}`,
             embeds: selectedTag.embeds,
             components: constructTagButtons(selectedTag.urls),
             allowedMentions: { repliedUser: true },
