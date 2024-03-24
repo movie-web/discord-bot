@@ -22,8 +22,7 @@ export class AvailableCommand extends Command {
       let episode: number | undefined;
 
       if (type === 'tv') {
-        const seasonOption = interaction.options.getInteger('season', false);
-        season = seasonOption !== null ? seasonOption : 1;
+        season = interaction.options.getInteger('season') ?? undefined;
         episode = interaction.options.getInteger('episode') ?? undefined;
       }
 

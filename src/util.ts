@@ -268,7 +268,10 @@ export function transformSearchResultToScrapeMedia(
       title: tvResult.name,
       releaseYear: new Date(tvResult.first_air_date).getFullYear(),
       season: {
-        number: season ?? tvResult.seasons[0].season_number,
+        number:
+          season ??
+          tvResult.seasons.find((s) => s.season_number === 1)?.season_number ??
+          tvResult.seasons[0].season_number,
         tmdbId: season
           ? tvResult.seasons.find((s) => s.season_number === season)?.id.toString() ?? ''
           : tvResult.seasons[0].id.toString(),
