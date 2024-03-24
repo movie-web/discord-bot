@@ -1,5 +1,5 @@
 import { Command } from '@sapphire/framework';
-import { CommandInteraction } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction } from 'discord.js';
 
 import { mwUrls } from '#src/config';
 import { isRealError } from '#src/util';
@@ -11,8 +11,10 @@ export class StatusCommand extends Command {
 
       const description = await Promise.all(
         mwUrls.map(async (url) => {
-          const { ok } = await fetch(url).catch(() => ({ ok: false }));
-          return `**${url}** ${ok ? `🟢 UP` : '🔴 DOWN'}`;
+          const response = await fetch(`${url.trim()}/ping.txt`).catch(() => null);
+          const text = response ? await response.text() : '';
+          const ok = text.trim() === 'pong';
+          return `${ok ? '🟢 UP' : '🔴 DOWN'} **${url.trim()}**`;
         }),
       ).then((lines) => lines.join('\n'));
 
@@ -27,16 +29,15 @@ export class StatusCommand extends Command {
         },
       ];
 
-      //   const components = [
-      //     new ActionRowBuilder<ButtonBuilder>().addComponents(
-      //       new ButtonBuilder()
-      //         .setLabel('submit your mirror')
-      //         .setStyle(ButtonStyle.Link)
-      //         .setURL('https://github.com/movie-web/discord-bot/edit/dev/src/mw-urls.txt'),
-      //     ),
-      //   ];
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setLabel('Instance Info')
+          .setEmoji('ℹ️')
+          .setStyle(ButtonStyle.Link)
+          .setURL('https://movie-web.github.io/docs/instances#community-instances'),
+      );
 
-      await interaction.editReply({ embeds });
+      await interaction.editReply({ embeds, components: [row] });
     } catch (ex) {
       if (isRealError(ex as Error)) {
         throw ex;

@@ -1,6 +1,6 @@
 {
   "name": "mw-bot",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "movie-web discord bot",
   "main": "dist/main.js",
   "repository": "git@github.com:movie-web/discord-bot.git",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@ltd/j-toml": "^1.38.0",
-    "@movie-web/providers": "^2.2.0",
+    "@movie-web/providers": "^2.2.4",
     "@sapphire/decorators": "^6.0.3",
     "@sapphire/framework": "^5.0.5",
     "@sapphire/plugin-logger": "^4.0.1",

@@ -31,7 +31,7 @@ import {
 import { Counter } from 'prom-client';
 import { MovieDetails, TMDB, TvShowDetails } from 'tmdb-ts';
 
-import { SourceType, Status, TagUrlButtonData, config, statusEmojiIds } from '#src/config';
+import { SourceType, Status, TagUrlButtonData, config, mwUrls, statusEmojiIds } from '#src/config';
 
 const tmdb = new TMDB(config.tmdbApiKey);
 
@@ -180,14 +180,61 @@ export async function checkAvailability(
   const numberOfSuccesses = status?.filter((s) => s.status === Status.SUCCESS).length ?? 0;
 
   if (numberOfSuccesses > 0) {
-    const actionRow = new ActionRowBuilder<ButtonBuilder>().setComponents(
-      new ButtonBuilder()
-        .setLabel('watch on movie-web')
-        .setStyle(ButtonStyle.Link)
-        .setURL(`https://movie-web.app/media/tmdb-${media.type}-${media.tmdbId}`),
-    );
+    const button = new ButtonBuilder()
+      .setLabel('🎞️ Watch on movie-web')
+      .setStyle(ButtonStyle.Secondary)
+      .setCustomId('watch_on_movie_web');
 
+    const actionRow = new ActionRowBuilder<ButtonBuilder>().setComponents(button);
+
+    const urlStatuses = await Promise.all(
+      mwUrls.map(async (url) => {
+        const response = await fetch(`${url.trim()}/ping.txt`).catch(() => null);
+        const text = response ? await response.text() : '';
+        const isUp = text.trim() === 'pong';
+        return { url, isUp };
+      }),
+    );
+    const description = `**Here are the following places available to watch \`${media.title}\`**:\n\n${urlStatuses
+      .filter(({ isUp }) => isUp)
+      .map(({ url }) => `- [${new URL(url).hostname}](${url.trim()}/media/tmdb-${media.type}-${media.tmdbId})`)
+      .join('\n')}`;
+    const embeds = [
+      {
+        title: '🎞️ Watch on movie-web',
+        description,
+        color: 0xa87fd1,
+      },
+    ];
     await interaction.editReply({ components: [actionRow] });
+    const filter = (i: { customId: string }) => i.customId === 'watch_on_movie_web';
+    if (interaction.channel) {
+      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+      collector.on('collect', async (i) => {
+        if (i.customId === 'watch_on_movie_web') {
+          const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+              .setLabel('Instance Info')
+              .setEmoji('ℹ️')
+              .setStyle(ButtonStyle.Link)
+              .setURL('https://movie-web.github.io/docs/instances#community-instances'),
+          );
+
+          await i.reply({ embeds, components: [row], ephemeral: true });
+        }
+      });
+      collector.on('end', async () => {
+        button.setDisabled(true);
+        try {
+          await interaction.editReply({ components: [actionRow] });
+        } catch (error) {
+          if (error instanceof DiscordAPIError && error.code === 10008) {
+            return;
+          }
+          throw error;
+        }
+      });
+    }
   }
 
   await makeResponseEmbed(cache, interaction, numberOfSuccesses > 0, numberOfSuccesses);
@@ -221,7 +268,10 @@ export function transformSearchResultToScrapeMedia(
       title: tvResult.name,
       releaseYear: new Date(tvResult.first_air_date).getFullYear(),
       season: {
-        number: season ?? tvResult.seasons[0].season_number,
+        number:
+          season ??
+          tvResult.seasons.find((s) => s.season_number === 1)?.season_number ??
+          tvResult.seasons[0].season_number,
         tmdbId: season
           ? tvResult.seasons.find((s) => s.season_number === season)?.id.toString() ?? ''
           : tvResult.seasons[0].id.toString(),
@@ -286,7 +336,7 @@ async function makeResponseEmbed(
 
   const embed = {
     title,
-    description: `${description}\n\n${SourceType.CUSTOM_PROXY} source requires a [custom proxy](<https://docs.movie-web.app/proxy/deploy>) or below\n${SourceType.EXTENSION} source requires the [browser extension](<https://github.com/movie-web/extension/releases/latest>) or below\n${SourceType.NATIVE} source requires the [native app](<https://github.com/movie-web/native-app/releases/latest>)`,
+    description: `${description}\n\n${SourceType.CUSTOM_PROXY} source requires a [custom proxy](<https://movie-web.github.io/docs/proxy/deploy>) or below\n${SourceType.EXTENSION} source requires the [browser extension](<https://github.com/movie-web/extension/releases/latest>) or below\n${SourceType.NATIVE} source requires the [native app](<https://github.com/movie-web/native-app/releases/latest>)`,
     color: 0xa87fd1,
     thumbnail: {
       url: getMediaPoster(cache.getPosterPath()!),
@@ -295,7 +345,6 @@ async function makeResponseEmbed(
       name: `movie-web`,
       icon_url: interaction.client.user?.displayAvatarURL(),
     },
-    url: `https://movie-web.app/media/tmdb-${media.type}-${media.tmdbId}`,
     timestamp: new Date().toISOString(),
     ...(success !== undefined
       ? {

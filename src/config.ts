@@ -13,7 +13,10 @@ const schema = z.object({
   discordToken: z.string().min(1),
   guildId: z.string().regex(/^(?<id>\d{17,20})$/),
   tmdbApiKey: z.string().min(1),
-  mwIconUrl: z.string().min(1).default('https://movie-web.app/android-chrome-512x512.png'),
+  mwIconUrl: z
+    .string()
+    .min(1)
+    .default('https://raw.githubusercontent.com/movie-web/movie-web/dev/public/android-chrome-512x512.png'),
 });
 
 const prefix = 'CONF_';

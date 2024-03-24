@@ -33,7 +33,7 @@ content = """
 Under the settings cog in the video player, you can find the download setting.
 
 **If the option mentions downloading a playlist, then you'll be downloading a HLS playlist, you can play this file using VLC.**
-Currently, the only source that supports downloading an MP4 file is Showbox, but this source is not available if you're using the public proxy.
+Currently, the only sources that support downloading an MP4 file are Showbox and HDrezka. Both are accessible via extension, with Showbox also being available through a non-Cloudflare proxy.
 """
 
 [episodes]
@@ -90,21 +90,13 @@ The movie you are trying to watch only came out in theatres very recently. We do
 We also won't point you to any other sources, so you're best off going to the actual movie theatre or waiting until it comes out on streaming. Asking for or providing other sources is against the rules and will result in a ban.
 """
 
-[squeezebox]
-isContextEnabled = true
-content = """
-# What is the new domain? Why did the site stop working?
-
-The site has moved to https://movie-web.app. The old domain is no longer functional. It stopped working because we moved to a new domain. Update your bookmarks, tell your friends! Don't ask us restore functionality to the old link, or else 😈
-"""
-
 [showbox]
 isContextEnabled = true
 content = """
 # What happened to Showbox/Febbox?
 
-[Showbox/Febbox is no longer supported on our public proxies](<https://discord.com/channels/871713465100816424/1116430057922121760/1194388487424708788>), meaning that you have to host one yourself.
-Doing so is simple and can be done for free and within 5 minutes, see [here](<https://docs.movie-web.app/proxy/deploy>).
+[Showbox/Febbox only works through a non-cloudfare proxy](<https://discord.com/channels/871713465100816424/1116430057922121760/1194388487424708788>) or through the movie-web extension. Meaning you can either use the movie-web extension, host your own proxy, or utilise an instance of movie-web that has a non-cloudflare proxy integrated into it.
+Hosting your own proxy is simple and can be done for free and within 5 minutes, see [here](<https://movie-web.github.io/docs/proxy/deploy>).
 
 If you need any extra help with setting up a custom proxy, you can ask for help in the [#custom-proxy](<https://discord.com/channels/871713465100816424/1194388816279113798>) channel.
 """
